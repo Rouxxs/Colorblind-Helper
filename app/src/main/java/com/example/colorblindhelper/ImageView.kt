@@ -1,15 +1,12 @@
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import android.content.Context
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -20,7 +17,6 @@ import androidx.compose.ui.graphics.ColorMatrix
 
 @Composable
 fun ImageView(
-    context: Context,
     photoUri: Uri,
     shouldShowPhoto: MutableState<Boolean>
 ) {

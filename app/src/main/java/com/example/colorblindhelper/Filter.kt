@@ -1,11 +1,3 @@
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.ImageDecoder
-import android.net.Uri
-import android.os.Build
-
 
 fun getFilterMatrix(filterType: String): FloatArray {
     return when (filterType) {

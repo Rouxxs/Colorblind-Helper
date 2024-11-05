@@ -79,10 +79,10 @@ fun CameraView(
     val cameraSelector = CameraSelector.Builder()
         .requireLensFacing(lensFacing)
         .build()
-    val density = LocalDensity.current;
+    val density = LocalDensity.current
     var bitmap: Bitmap? = null
     val handler = Handler(Looper.getMainLooper())
-    val colorHandler = ColorHandler();
+    val colorHandler = ColorHandler()
     val radius = 2.dp
     var rgbColor by remember { mutableStateOf(Triple(0, 0, 0)) }
     var hexColor by remember { mutableStateOf("#000000") }

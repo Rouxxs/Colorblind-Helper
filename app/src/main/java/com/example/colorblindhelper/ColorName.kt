@@ -50,33 +50,33 @@ class ColorUtils {
     }
 
     // Tạo danh sách màu với tên và miêu tả
-    fun generateColorDescriptionList(count: Int): List<ColorName> {
-        val colors = mutableListOf<ColorName>()
-        val step = 256 / Math.cbrt(count.toDouble()).toInt()
+//    fun generateColorDescriptionList(count: Int): List<ColorName> {
+//        val colors = mutableListOf<ColorName>()
+//        val step = 256 / Math.cbrt(count.toDouble()).toInt()
+//
+//        for (r in 0 until 256 step step) {
+//            for (g in 0 until 256 step step) {
+//                for (b in 0 until 256 step step) {
+//                    if (colors.size >= count) break
+//
+//                    // Chuyển đổi RGB sang HSB và xác định hue và tone
+//                    val (hue, saturation, brightness) = rgbToHsb(r, g, b)
+//                    val hueName = getHueName(hue)
+//                    val toneName = getToneName(saturation, brightness)
+//
+//                    // Tạo tên
+//                    val colorName = "$toneName $hueName"
+//
+//                    colors.add(ColorName(colorName,r, g, b))
+//                }
+//            }
+//        }
+//        colors.add(ColorName("Black", 0, 0, 0))
+//        colors.add(ColorName("White", 255, 255, 255))
+//        return colors
+//    }
 
-        for (r in 0 until 256 step step) {
-            for (g in 0 until 256 step step) {
-                for (b in 0 until 256 step step) {
-                    if (colors.size >= count) break
-
-                    // Chuyển đổi RGB sang HSB và xác định hue và tone
-                    val (hue, saturation, brightness) = rgbToHsb(r, g, b)
-                    val hueName = getHueName(hue)
-                    val toneName = getToneName(saturation, brightness)
-
-                    // Tạo tên
-                    val colorName = "$toneName $hueName"
-
-                    colors.add(ColorName(colorName,r, g, b))
-                }
-            }
-        }
-        colors.add(ColorName("Black", 0, 0, 0))
-        colors.add(ColorName("White", 255, 255, 255))
-        return colors
-    }
-
-    val colors: List<ColorName> = generateColorDescriptionList(30000);
+    //val colors: List<ColorName> = generateColorDescriptionList(30000)
     private fun initColorList(): List<ColorName> {
         return listOf(
             ColorName("Aqua", 0, 255, 255),
@@ -246,43 +246,43 @@ class ColorUtils {
         }
     }
     // Lấy tên màu gần nhất từ RGB
-    fun getColorNameFromRgb(r: Int, g: Int, b: Int): String {
-        val colorList = initColorList()
-        var closestMatch: ColorName? = null
-        var minMSE = Int.MAX_VALUE
+//    fun getColorNameFromRgb(r: Int, g: Int, b: Int): String {
+//        val colorList = initColorList()
+//        var closestMatch: ColorName? = null
+//        var minMSE = Int.MAX_VALUE
+//
+//        for (color in colorList) {
+//            val mse = color.computeMSE(r, g, b)
+//            if (mse < minMSE) {
+//                minMSE = mse
+//                closestMatch = color
+//            }
+//        }
+//
+//        return closestMatch?.name ?: "No matched color name."
+//    }
 
-        for (color in colorList) {
-            val mse = color.computeMSE(r, g, b)
-            if (mse < minMSE) {
-                minMSE = mse
-                closestMatch = color
-            }
-        }
-
-        return closestMatch?.name ?: "No matched color name."
-    }
-
-    fun colorDistance(r1: Int, g1: Int, b1: Int, r2: Int, g2: Int, b2: Int): Double {
-        return Math.sqrt(
-            ((r1 - r2) * (r1 - r2) +
-                    (g1 - g2) * (g1 - g2) +
-                    (b1 - b2) * (b1 - b2)).toDouble()
-        )
-    }
+//    fun colorDistance(r1: Int, g1: Int, b1: Int, r2: Int, g2: Int, b2: Int): Double {
+//        return Math.sqrt(
+//            ((r1 - r2) * (r1 - r2) +
+//                    (g1 - g2) * (g1 - g2) +
+//                    (b1 - b2) * (b1 - b2)).toDouble()
+//        )
+//    }
 
 
     // Chuyển hexColor thành RGB, rồi gọi getColorNameFromRgb
-    fun getColorNameFromHex(hexColor: Int): String {
-        val r = (hexColor and 0xFF0000) shr 16
-        val g = (hexColor and 0xFF00) shr 8
-        val b = (hexColor and 0xFF)
-        return getColorNameFromRgb(r, g, b)
-    }
+//    fun getColorNameFromHex(hexColor: Int): String {
+//        val r = (hexColor and 0xFF0000) shr 16
+//        val g = (hexColor and 0xFF00) shr 8
+//        val b = (hexColor and 0xFF)
+//        return getColorNameFromRgb(r, g, b)
+//    }
 
     // Lấy tên màu từ đối tượng Color
-    fun getColorNameFromColor(color : Triple<Int, Int, Int>): String {
-        return getColorNameFromRgb(color.first, color.second, color.third)
-    }
+//    fun getColorNameFromColor(color : Triple<Int, Int, Int>): String {
+//        return getColorNameFromRgb(color.first, color.second, color.third)
+//    }
     data class ColorName(val name: String, val r: Int, val g: Int, val b: Int) {
         fun computeMSE(pixR: Int, pixG: Int, pixB: Int): Int {
             return ((pixR - r) * (pixR - r) + (pixG - g) * (pixG - g) + (pixB - b) * (pixB - b)) / 3

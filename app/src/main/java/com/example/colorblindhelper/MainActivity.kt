@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
                 if (shouldShowPhoto.value) {
-                    ImageView(context = this, photoUri = photoUri, shouldShowPhoto = shouldShowPhoto)
+                    ImageView(photoUri = photoUri, shouldShowPhoto = shouldShowPhoto)
                 } else {
                     MyApp()
 
