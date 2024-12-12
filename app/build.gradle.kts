@@ -78,6 +78,6 @@ dependencies {
     implementation("androidx.camera:camera-view:1.4.0")
 
     // Coil
-    implementation("io.coil-kt:coil-compose:1.4.0")
+    implementation("io.coil-kt:coil-compose:2.1.0")
 }
 

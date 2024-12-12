@@ -4,8 +4,10 @@ import ImageView
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Text
@@ -60,12 +62,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-                if (shouldShowPhoto.value) {
-                    ImageView(photoUri = photoUri, shouldShowPhoto = shouldShowPhoto)
-                } else {
-                    MyApp()
 
-                }
+            if (shouldShowPhoto.value) {
+                ImageView(photoUri = photoUri, shouldShowPhoto = shouldShowPhoto)
+            } else {
+                MyApp()
+
+            }
         }
         requestCameraPermission()
         requestStoragePermission()
@@ -76,8 +79,16 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MyApp() {
         val navController = rememberNavController()
+        val photoPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
+            onResult = { uri ->
+                if (uri != null) {
+                    handleImageCapture(uri)
+                }
+            }
+        )
         NavHost(navController = navController, startDestination = "HomeView") {
-            composable("HomeView") { HomeView(navController) }
+            composable("HomeView") { HomeView(navController, photoPickerLauncher) }
             composable("CameraView") { CameraView(
                 navController = navController,
                 outputDirectory = outputDirectory,
@@ -85,6 +96,7 @@ class MainActivity : ComponentActivity() {
                 onImageCaptured = ::handleImageCapture,
                 onError = { Log.e("Camera", "Error: ", it) }
             ) }
+            composable("TestView") { ColorblindnessTestView(navController = navController) }
         }
     }
 
@@ -96,13 +108,27 @@ class MainActivity : ComponentActivity() {
         shouldShowPhoto.value = true
     }
 
+//    private fun getOutputDirectory(): File {
+//        val mediaDir = externalMediaDirs.firstOrNull()?.let {
+//            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
+//        }
+//
+//        return if (mediaDir != null && mediaDir.exists()) mediaDir else filesDir
+//    }
+
     private fun getOutputDirectory(): File {
-        val mediaDir = externalMediaDirs.firstOrNull()?.let {
-            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
+        val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+        val appFolder = File(picturesDir, resources.getString(R.string.app_name))
+
+        if (!appFolder.exists()) {
+            Log.i("Directory", "Creating directory: ${appFolder.absolutePath}")
+            appFolder.mkdirs() // Tạo thư mục nếu chưa tồn tại
         }
 
-        return if (mediaDir != null && mediaDir.exists()) mediaDir else filesDir
+        return appFolder
     }
+
+
 
     private fun requestCameraPermission() {
         when {
@@ -163,3 +189,4 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+

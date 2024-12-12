@@ -1,10 +1,12 @@
 package com.example.colorblindhelper
 
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -18,14 +20,22 @@ import androidx.compose.foundation.layout.Arrangement
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -43,6 +53,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,6 +69,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CameraView(
     navController: NavController,
@@ -66,7 +78,44 @@ fun CameraView(
     onImageCaptured: (Uri) -> Unit,
     onError: (ImageCaptureException) -> Unit
 ) {
-    // 1
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Gray,
+                    titleContentColor = Color.White,
+                ),
+                title = {
+                    Text("Color Detect Camera")
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp()}) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                            contentDescription = "Localized description",
+                            tint = Color.White
+                        )
+                    }
+                },
+            )
+        },
+    ) { innerPadding ->
+        CameraViewContent(
+            innerPadding,
+            navController = navController,
+            outputDirectory = outputDirectory,
+            executor = executor,
+            onImageCaptured = onImageCaptured,
+            onError = onError
+        )
+    }
+
+}
+
+@Composable
+fun CameraViewContent(innerPadding: PaddingValues, navController: NavController, outputDirectory: File, executor: Executor, onImageCaptured: (Uri) -> Unit, onError: (ImageCaptureException) -> Unit) {
+// 1
     val colorUtils = ColorUtils()
     val lensFacing = CameraSelector.LENS_FACING_BACK
     val context = LocalContext.current
@@ -123,7 +172,8 @@ fun CameraView(
         handler.post(bitmapCallback)
     }
 
-    Column (horizontalAlignment = Alignment.CenterHorizontally){
+    Column (horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(innerPadding)){
         //val camWidth = LocalConfiguration.current.screenWidthDp * 4 / 6;
         //Log.i("Camera Size", "Local: " + LocalConfiguration.current.screenWidthDp + " " + camWidth)
 
@@ -132,7 +182,7 @@ fun CameraView(
         Box(contentAlignment = Alignment.BottomCenter,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(LocalConfiguration.current.screenHeightDp.dp * 4 / 6)
+                .fillMaxHeight()
         ) {
             AndroidView({ previewView }, modifier = Modifier
                 .matchParentSize())
@@ -149,36 +199,35 @@ fun CameraView(
                     )
                 }
             }
+            IconButton(
+                onClick = {
+                    takePhoto(
+                        "yyyy-MM-dd-HH-mm-ss-SSS",
+                        imageCapture,
+                        outputDirectory,
+                        executor,
+                        onImageCaptured,
+                        onError
+                    )
+                },
+                modifier = Modifier.size(50.dp)
+                // Add some padding from the bottom
+            ) {
+                Icon(painter = painterResource(id = R.drawable.baseline_camera_24), contentDescription = "",modifier = Modifier.size(100.dp))
+            }
 
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                takePhoto(
-                    "yyyy-MM-dd-HH-mm-ss-SSS",
-                    imageCapture,
-                    outputDirectory,
-                    executor,
-                    onImageCaptured,
-                    onError
-                )
-            },
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                 // Add some padding from the bottom
-        ) {
-            Text("Take Photo")
-        }
+
 
         // Add the Back button in the bottom left
-        Button(
-            onClick = { navController.navigateUp() }, // Navigate back
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(16.dp) // Add padding to avoid the edge
-        ) {
-            Text("Back")
-        }
+//        Button(
+//            onClick = { navController.navigateUp() }, // Navigate back
+//            modifier = Modifier
+//                .align(Alignment.Start)
+//                .padding(16.dp)
+//        ) {
+//            Text("Back")
+//        }
     }
 
     DisposableEffect(Unit) {
@@ -271,3 +320,13 @@ private suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspend
         }, ContextCompat.getMainExecutor(this))
     }
 }
+
+//private fun getGalleryUri(filename: String, context : Context): Uri? {
+//    val contentValues = ContentValues().apply {
+//        put(MediaStore.Images.Media.DISPLAY_NAME, "$filename.jpg")
+//        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+//        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/${R.string.app_name}")
+//    }
+//
+//    return context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+//}
